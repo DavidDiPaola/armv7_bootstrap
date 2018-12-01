@@ -52,11 +52,13 @@ run-debugger: $(BIN_ELF)
 
 .PHONY: dump-elf
 dump-elf: $(BIN_ELF)
-	$(OBJDUMP) --disassemble --source --line-numbers $<
+	@echo [OBJDUMP] $<
+	@$(OBJDUMP) --disassemble --source --line-numbers $<
 
 .PHONY: dump-elf-syms
 dump-elf-syms: $(BIN_ELF)
-	$(OBJDUMP) --syms $<
+	@echo [OBJDUMP] $<
+	@$(OBJDUMP) --syms $<
 
 .PHONY: clean
 clean:
