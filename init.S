@@ -56,10 +56,7 @@ init:
 	cpsid if, _cps_mode_svc
 	ldr sp, =_svcstack+_svcstack_size
 
-	/* TODO? handle sys mode */
-
 	/* TODO create 'usr handler' to jump back into svc mode */
-	/* TODO set usr sp */
 
 	bl main
 1:	wfi      /* sleep CPU forever */
