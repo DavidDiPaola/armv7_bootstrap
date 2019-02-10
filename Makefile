@@ -1,15 +1,20 @@
 #2018 David DiPaola
 #licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
 
-SRC = main.c
+SRC_S = init.S
+SRC_C = main.c
 BIN_ELF = boot.elf
 BIN_BIN = $(BIN_ELF:.elf=.bin)
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC_S:.S=.o) $(SRC_C:.c=.o)
 
 PREFIX ?= arm-none-eabi-
 GCC ?= $(PREFIX)gcc
-GCC_FLAGS = \
+GCC_ASFLAGS = \
+	-mcpu=cortex-a7 \
+	-g \
+	$(CPP_FLAGS_DEBUG)
+GCC_CFLAGS = \
 	-std=c99 \
 	-mcpu=cortex-a7 \
 	-ffreestanding -nostdinc \
@@ -65,11 +70,15 @@ clean:
 	@echo [RM] $(OBJ) $(BIN_ELF) $(BIN_BIN)
 	@rm -rf $(OBJ) $(BIN_ELF) $(BIN_BIN)
 
+.S.o:
+	@echo [AS] $<
+	@$(GCC) $(GCC_ASFLAGS) -o $@ -c $<
+
 .c.o:
-	@echo [GCC] $<
-	@$(GCC) $(GCC_FLAGS) -o $@ -c $<
+	@echo [CC] $<
+	@$(GCC) $(GCC_CFLAGS) -o $@ -c $<
 
 $(BIN_ELF): layout.lds $(OBJ)
-	@echo [GLD] -T layout.lds -o $@ $(OBJ)
+	@echo [LD] -T layout.lds -o $@ $(OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(OBJ)
 

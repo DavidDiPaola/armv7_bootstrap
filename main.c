@@ -87,6 +87,7 @@ void
 main(void) {
 	println(NULL); println("booted");
 
-	print_mem(0x1C090000, 400);
+	//print_mem(0x1C090000, 400);
+	print_mem(0x00000000, 16);
 }
 
