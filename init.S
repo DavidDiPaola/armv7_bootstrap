@@ -1,12 +1,12 @@
 .code 32
 
 /* stack sizes (see: DDI0406C.D B1-2) */
-.set _usrsysstack_size,   0x100
-.set _fiqstack_size,      0x100
-.set _irqstack_size,      0x100
-.set _svcstack_size,    0x10000
-.set _abtstack_size,      0x100
-.set _undstack_size,      0x100
+.set _usrsysstack_size, 65536
+.set _fiqstack_size,      256
+.set _irqstack_size,      256
+.set _svcstack_size,      256
+.set _abtstack_size,      256
+.set _undstack_size,      256
 
 /* Program Status Register Control bits (see: DDI0406C.D B1.3.3, DDI0406C.D B1.3.1) */
 .set _psr_c_mode_usr, ((0x10 | 0x0) << 0) 
