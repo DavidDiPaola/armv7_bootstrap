@@ -4,12 +4,12 @@ licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/
 */
 
 /* code entry point */
-ENTRY(init)
+ENTRY(_handler_reset)
 
 /* memory regions (see QEMU:vexpress.c) */
 MEMORY {
-	MAP_IO_UART0 : ORIGIN = 0x1C090000, LENGTH = 0x00000400 /* 1KB */
-	MAP_DRAM     : ORIGIN = 0x80000000, LENGTH = 0x80000000 /* 2GB */
+	MAP_IO_UART0   : ORIGIN = 0x1C090000, LENGTH = 0x00000400 /* PL011, 1KB */
+	MAP_DRAM       : ORIGIN = 0x80000000, LENGTH = 0x80000000 /* 2GB */
 }
 
 /* ELF binary sections */
@@ -35,6 +35,5 @@ SECTIONS {
 	.bss : SUBALIGN(4) {
 		*(.bss)
 	} >MAP_DRAM
-
 }
 

@@ -8,17 +8,6 @@
 .set _abtstack_size,      256
 .set _undstack_size,      256
 
-/* Program Status Register Control bits (see: DDI0406C.D B1.3.3, DDI0406C.D B1.3.1) */
-.set _psr_c_mode_usr, ((0x10 | 0x0) << 0) 
-.set _psr_c_mode_fiq, ((0x10 | 0x1) << 0) 
-.set _psr_c_mode_irq, ((0x10 | 0x2) << 0) 
-.set _psr_c_mode_svc, ((0x10 | 0x3) << 0)
-.set _psr_c_mode_abt, ((0x10 | 0x7) << 0)
-.set _psr_c_mode_und, ((0x10 | 0xB) << 0)
-.set _psr_c_mode_sys, ((0x10 | 0xF) << 0)
-.set _psr_c_fiqdis,   (           1 << 6)
-.set _psr_c_irqdis,   (           1 << 7)
-
 /* Change Processor State bits (see: QRC0001 Processor Modes) */
 .set _cps_mode_usr, 16
 .set _cps_mode_fiq, 17
@@ -28,40 +17,74 @@
 .set _cps_mode_und, 27
 .set _cps_mode_sys, 31
 
-.align 4
-.section .text.init
-.globl init
-init:
-	/* usr/sys stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
-	cpsid if, _cps_mode_sys
-	ldr sp, =_usrsysstack+_usrsysstack_size
 
-	/* abt stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+.align 4
+	b _handler_reset      /* reset vector */
+	b _handler_undefined  /* undefined vector */
+	b _handler_svc        /* SVC vector */
+	b _handler_prefetch   /* prefetch vector */
+	b _handler_abort      /* abort vector */
+	nop                   /* reserved vector */
+	b _handler_irq        /* IRQ vector */
+	b _handler_fiq        /* FIQ vector */
+
+
+.globl _handler_reset
+_handler_reset:
+	/* Abort mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_abt
 	ldr sp, =_abtstack+_abtstack_size
 
-	/* und stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+	/* Undefinied mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_und
 	ldr sp, =_undstack+_undstack_size
 
-	/* irq stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+	/* IRQ mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_irq
 	ldr sp, =_irqstack+_irqstack_size
 
-	/* fiq stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+	/* FIQ mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_fiq
 	ldr sp, =_fiqstack+_fiqstack_size
 
-	/* svc stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+	/* Supervisor mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_svc
 	ldr sp, =_svcstack+_svcstack_size
 
-	/* TODO create 'usr handler' to jump back into svc mode */
+	/* User/System mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
+	cpsid if, _cps_mode_sys
+	ldr sp, =_usrsysstack+_usrsysstack_size
+
+	/* TODO create 'usr handler' to jump back into sys mode */
 
 	bl main
 1:	wfi      /* sleep CPU forever */
 	b 1b
-/* end section */
+
+
+_handler_undefined:
+	b .
+
+
+_handler_svc:
+	b .
+
+
+_handler_prefetch:
+	b .
+
+
+_handler_abort:
+	b .
+
+
+_handler_irq:
+	b .
+
+
+_handler_fiq:
+	b .
+
 
 /* stacks (see: DDI0406C.D B1-2) */
 .align 4

@@ -11,11 +11,10 @@ typedef unsigned int   u32;
 
 const void * NULL = 0;
 
-/* PL011 registers (see DDI0183:3.2) */
+/* PL011 registers (see: DDI0183 3.2) */
 struct uart_pl011 {
 	volatile u32 dr;  /* 0x000 */
 };
-
 pragma_section("SECTION_IO_UART0") struct uart_pl011 uart0;
 
 static void
@@ -70,11 +69,13 @@ print_mem(u32 addr, u32 length) {
 	u32 * mem = 0;
 	for (u32 i=0; i<length; i++) {
 		if ((i % 8) == 0) {
-			print_hex32(i);
+			print("[");
+			print_hex32(addr+i);
+			print("]");
 		}
 
 		print("  ");
-		print_hex32(mem[addr+i]);
+		print_hex32(mem[(addr/sizeof(*mem)) + i]);
 
 		if ((i % 8) == 7) {
 			println(NULL);
@@ -87,7 +88,12 @@ void
 main(void) {
 	println(NULL); println("booted");
 
-	//print_mem(0x1C090000, 400);
+	println("BIOS stub:");
 	print_mem(0x00000000, 16);
+
+	println("kernel:");
+	print_mem(0x80000000, 16);
+
+	__asm("svc 42");
 }
 
