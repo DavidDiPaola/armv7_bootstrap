@@ -1,5 +1,5 @@
-#2018 David DiPaola
-#licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
+# 2018,2019 David DiPaola
+# licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
 
 KERNEL_SRC_S = init.S
 KERNEL_SRC_C = main.c

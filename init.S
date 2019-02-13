@@ -1,3 +1,8 @@
+/*
+2019 David DiPaola
+licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
+*/
+
 .code 32
 
 /* stack sizes (see: DDI0406C.D B1-2) */
