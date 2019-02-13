@@ -1,5 +1,4 @@
 *.o
-biosstub.bin
 boot.elf
 
 .*.swp

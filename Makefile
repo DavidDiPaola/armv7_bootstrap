@@ -6,10 +6,6 @@ KERNEL_SRC_C = main.c
 KERNEL_OBJ = $(KERNEL_SRC_S:.S=.o) $(KERNEL_SRC_C:.c=.o)
 KERNEL_ELF = boot.elf
 
-BIOSSTUB_SRC = biosstub.S
-BIOSSTUB_OBJ = $(BIOSSTUB_SRC:.S=.o)
-BIOSSTUB_BIN = biosstub.bin
-
 PREFIX ?= arm-none-eabi-
 GCC ?= $(PREFIX)gcc
 GCC_ASFLAGS = \
@@ -40,17 +36,17 @@ OBJDUMP ?= $(PREFIX)objdump
 OBJCOPY ?= $(PREFIX)objcopy
 
 .PHONY: all
-all: $(BIOSSTUB_BIN) $(KERNEL_ELF)
+all: $(KERNEL_ELF)
 
 .PHONY: run
-run: $(BIOSSTUB_BIN) $(KERNEL_ELF)
+run: $(KERNEL_ELF)
 	@echo [QEMU] $<
-	@$(QEMU) $(QEMU_FLAGS) -bios $(BIOSSTUB_BIN) -kernel $(KERNEL_ELF)
+	@$(QEMU) $(QEMU_FLAGS) -kernel $(KERNEL_ELF)
 
 .PHONY: run-paused
-run-paused: $(BIOSSTUB_BIN) $(KERNEL_ELF)
+run-paused: $(KERNEL_ELF)
 	@echo [QEMU] $^
-	@$(QEMU) $(QEMU_FLAGS) -S -bios $(BIOSSTUB_BIN) -kernel $(KERNEL_ELF)
+	@$(QEMU) $(QEMU_FLAGS) -S -kernel $(KERNEL_ELF)
 
 .PHONY: run-debugger
 run-debugger: $(KERNEL_ELF)
@@ -69,8 +65,6 @@ dump-elf-syms: $(KERNEL_ELF)
 
 .PHONY: clean
 clean:
-	@echo [RM] $(BIOSSTUB_OBJ) $(BIOSSTUB_BIN)
-	@rm -rf $(BIOSSTUB_OBJ) $(BIOSSTUB_BIN)
 	@echo [RM] $(KERNEL_OBJ) $(KERNEL_ELF)
 	@rm -rf $(KERNEL_OBJ) $(KERNEL_ELF)
 
@@ -81,10 +75,6 @@ clean:
 .c.o:
 	@echo [CC] $<
 	@$(GCC) $(GCC_CFLAGS) -o $@ -c $<
-
-$(BIOSSTUB_BIN): $(BIOSSTUB_OBJ)
-	@echo [OBJCOPY] $< $@
-	@$(OBJCOPY) --set-start 0x00000000 --only-section .text --output-target binary $< $@
 
 $(KERNEL_ELF): layout.lds $(KERNEL_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(KERNEL_OBJ)

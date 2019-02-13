@@ -31,6 +31,15 @@
 
 .globl _handler_reset
 _handler_reset:
+	/* move the vector table to the start of this executable */
+	ldr r0, =0b11111
+	mrc p15, 0, r1, c12, c0, 0
+	and r1, r1, r0
+	ldr r2, =layout_text_start
+	bic r2, r2, r0
+	orr r1, r1, r2
+	mcr p15, 0, r1, c12, c0, 0
+
 	/* Abort mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_abt
 	ldr sp, =_abtstack+_abtstack_size
