@@ -84,7 +84,7 @@ clean:
 
 $(BIOSSTUB_BIN): $(BIOSSTUB_OBJ)
 	@echo [OBJCOPY] $< $@
-	@$(OBJCOPY) --output-target binary $< $@
+	@$(OBJCOPY) --set-start 0x00000000 --only-section .text --output-target binary $< $@
 
 $(KERNEL_ELF): layout.lds $(KERNEL_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(KERNEL_OBJ)
