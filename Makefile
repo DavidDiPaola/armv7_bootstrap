@@ -4,7 +4,7 @@
 KERNEL_SRC_S = init.S
 KERNEL_SRC_C = main.c
 KERNEL_OBJ = $(KERNEL_SRC_S:.S=.o) $(KERNEL_SRC_C:.c=.o)
-KERNEL_ELF = boot.elf
+KERNEL_ELF = kernel.elf
 
 PREFIX ?= arm-none-eabi-
 GCC ?= $(PREFIX)gcc
