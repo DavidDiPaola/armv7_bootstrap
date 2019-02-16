@@ -3,8 +3,6 @@
 licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
 */
 
-#define pragma_section(name) __attribute__((section(name)))
-
 typedef unsigned char   u8;
 typedef unsigned short u16;
 typedef unsigned int   u32;
@@ -15,11 +13,11 @@ const void * NULL = 0;
 struct uart_pl011 {
 	volatile u32 dr;  /* 0x000 */
 };
-pragma_section("SECTION_IO_UART0") struct uart_pl011 uart0;
+struct uart_pl011 * const uart0 = (void *)0x1C090000;  /* (see QEMU:vexpress.c) */
 
 static void
 print_char(char value) {
-	uart0.dr = value;
+	uart0->dr = value;
 }
 
 static void
