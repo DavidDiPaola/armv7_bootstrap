@@ -1,5 +1,5 @@
 *.o
-kernel.elf
+*.elf
 
 .*.swp
 

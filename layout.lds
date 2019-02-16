@@ -18,8 +18,8 @@ SECTIONS {
 	/* DRAM */
 	.text : SUBALIGN(4) {
 		layout_text_start = .;
-		init.o(.text)
-		init.o(.rodata)
+		*/init.o(.text)
+		*/init.o(.rodata)
 		*(.text)
 		*(.rodata)
 	} >MAP_DRAM
