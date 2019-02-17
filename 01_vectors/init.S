@@ -23,8 +23,28 @@ licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/
 .set _cps_mode_sys, 31
 
 
+.align 4
+	b _handler_reset      /* reset vector */
+	b _handler_reset      /* undefined vector */
+	b _handler_svc        /* SVC vector */
+	b _handler_reset      /* prefetch vector */
+	b _handler_reset      /* abort vector */
+	b _handler_reset      /* reserved vector */
+	b _handler_reset      /* IRQ vector */
+	b _handler_reset      /* FIQ vector */
+
+
 .globl _handler_reset
 _handler_reset:
+	/* move the vector table to the start of this executable (see: DDI0464F 4.2.13) */
+	ldr r0, =0b11111
+	mrc p15, 0, r1, c12, c0, 0
+	and r1, r1, r0
+	ldr r2, =layout_text_start  /* layout_text_start is from layout.lds */
+	bic r2, r2, r0
+	orr r1, r1, r2
+	mcr p15, 0, r1, c12, c0, 0
+
 	/* Abort mode stack pointer init (see: DDI0406C.D B1-2, 100748_0609_00_en 6.16) */
 	cpsid if, _cps_mode_abt
 	ldr sp, =_abtstack+_abtstack_size
@@ -54,6 +74,11 @@ _handler_reset:
 	bl main
 1:	wfi      /* sleep CPU forever */
 	b 1b
+
+
+.weak _handler_svc
+_handler_svc:
+	b .
 
 
 /* stacks (see: DDI0406C.D B1-2) */

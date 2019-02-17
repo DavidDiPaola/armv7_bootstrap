@@ -22,8 +22,18 @@ print(const char * s) {
 	}
 }
 
+__attribute__ ((interrupt ("SWI")))
+void
+_handler_svc(void) {
+	print("(step 2 of 3) SVC exception occurred" "\r\n");
+}
+
 void
 main(void) {
 	print("hello world!" "\r\n");
+
+	print("(step 1 of 3) going to trigger SVC exception..." "\r\n");
+	__asm("svc 42");
+	print("(step 3 of 3) returned from SVC exception" "\r\n");
 }
 

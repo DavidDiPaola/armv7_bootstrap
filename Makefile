@@ -6,6 +6,11 @@
 00_OBJ = $(00_SRC_S:.S=.o) $(00_SRC_C:.c=.o)
 00_ELF = 00_helloworld/kernel.elf
 
+01_SRC_S = 01_vectors/init.S
+01_SRC_C = 01_vectors/main.c
+01_OBJ = $(01_SRC_S:.S=.o) $(01_SRC_C:.c=.o)
+01_ELF = 01_vectors/kernel.elf
+
 PREFIX ?= arm-none-eabi-
 GCC ?= $(PREFIX)gcc
 GCC_ASFLAGS = \
@@ -31,12 +36,22 @@ QEMU_FLAGS = \
 	-m 32M
 
 .PHONY: all
-all: $(00_ELF)
+all: $(00_ELF) $(01_ELF)
 
 .PHONY: clean
 clean:
 	@echo [RM] $(00_OBJ) $(00_ELF)
 	@rm -rf $(00_OBJ) $(00_ELF)
+	@echo [RM] $(01_OBJ) $(01_ELF)
+	@rm -rf $(01_OBJ) $(01_ELF)
+
+$(00_ELF): layout.lds $(00_OBJ)
+	@echo [LD] -T layout.lds -o $@ $(00_OBJ)
+	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(00_OBJ)
+
+$(01_ELF): layout.lds $(01_OBJ)
+	@echo [LD] -T layout.lds -o $@ $(01_OBJ)
+	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(01_OBJ)
 
 .S.o:
 	@echo [AS] $<
@@ -45,8 +60,4 @@ clean:
 .c.o:
 	@echo [CC] $<
 	@$(GCC) $(GCC_CFLAGS) -o $@ -c $<
-
-$(00_ELF): layout.lds $(00_OBJ)
-	@echo [LD] -T layout.lds -o $@ $(00_OBJ)
-	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(00_OBJ)
 
