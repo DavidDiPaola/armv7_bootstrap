@@ -3,8 +3,14 @@
 licensed under CC0 (public domain, see https://creativecommons.org/publicdomain/zero/1.0/)
 */
 
+#include "config_code.h"
+
 /* code entry point */
 ENTRY(_handler_reset)
+
+MEMORY {
+	MEMORY_KERNEL : ORIGIN = CONFIG_CODE_KERNEL_STARTADDR , LENGTH = 8M
+}
 
 /* ELF binary sections */
 SECTIONS {
@@ -16,12 +22,12 @@ SECTIONS {
 		*/init.o(.rodata)
 		*(.text)
 		*(.rodata)
-	}
+	} >MEMORY_KERNEL
 	.data : SUBALIGN(4) {
 		*(.data)
-	}
+	} >MEMORY_KERNEL
 	.bss : SUBALIGN(4) {
 		*(.bss)
-	}
+	} >MEMORY_KERNEL
 }
 
