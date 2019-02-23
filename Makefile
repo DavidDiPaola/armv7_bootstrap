@@ -11,6 +11,8 @@
 01_OBJ = $(01_SRC_S:.S=.o) $(01_SRC_C:.c=.o)
 01_ELF = 01_vectors/kernel.elf
 
+include config.mk
+
 PREFIX ?= arm-none-eabi-
 GCC ?= $(PREFIX)gcc
 GCC_ASFLAGS = \
@@ -28,12 +30,9 @@ GLD ?= $(PREFIX)ld
 GLD_FLAGS = \
 	-static -nostdlib \
 	-O1 --gc-sections --print-gc-sections
-QEMU ?= qemu-system-arm
-QEMU_FLAGS = \
-	-gdb tcp::1234 \
-	-nographic \
-	-machine vexpress-a15 -cpu cortex-a7 \
-	-m 32M
+OBJCOPY ?= $(PREFIX)objcopy
+
+
 
 .PHONY: all
 all: $(00_ELF) $(01_ELF)
@@ -48,10 +47,14 @@ clean:
 $(00_ELF): layout.lds $(00_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(00_OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(00_OBJ)
+	@echo [OBJCOPY] --change-addresses $(CONFIG_KERNEL_STARTADDR) $@
+	@$(OBJCOPY) --change-addresses $(CONFIG_KERNEL_STARTADDR) $@ $@
 
 $(01_ELF): layout.lds $(01_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(01_OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(01_OBJ)
+	@echo [OBJCOPY] --change-addresses $(CONFIG_KERNEL_STARTADDR) $@
+	@$(OBJCOPY) --change-addresses $(CONFIG_KERNEL_STARTADDR) $@ $@
 
 .S.o:
 	@echo [AS] $<
