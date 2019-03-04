@@ -11,6 +11,11 @@
 01_OBJ = $(01_SRC_S:.S=.o) $(01_SRC_C:.c=.o)
 01_ELF = 01_vectors/kernel.elf
 
+02_SRC_S = 02_timer/init.S
+02_SRC_C = 02_timer/main.c
+02_OBJ = $(02_SRC_S:.S=.o) $(02_SRC_C:.c=.o)
+02_ELF = 02_timer/kernel.elf
+
 include config_build.mk
 
 PREFIX ?= arm-none-eabi-
@@ -36,7 +41,7 @@ CPP_FLAGS = -C -P
 
 
 .PHONY: all
-all: $(00_ELF) $(01_ELF)
+all: $(00_ELF) $(01_ELF) $(02_ELF)
 
 .PHONY: clean
 clean:
@@ -46,6 +51,8 @@ clean:
 	@rm -rf $(00_OBJ) $(00_ELF)
 	@echo [RM] $(01_OBJ) $(01_ELF)
 	@rm -rf $(01_OBJ) $(01_ELF)
+	@echo [RM] $(02_OBJ) $(02_ELF)
+	@rm -rf $(02_OBJ) $(02_ELF)
 
 layout.lds: layout.lds.cpp
 	@echo [CPP] $< -o $@
@@ -58,6 +65,10 @@ $(00_ELF): layout.lds $(00_OBJ)
 $(01_ELF): layout.lds $(01_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(01_OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(01_OBJ)
+
+$(02_ELF): layout.lds $(02_OBJ)
+	@echo [LD] -T layout.lds -o $@ $(02_OBJ)
+	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(02_OBJ)
 
 .S.o:
 	@echo [AS] $<
