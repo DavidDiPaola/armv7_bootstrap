@@ -71,7 +71,10 @@ struct __attribute__ ((packed)) gic400 {
 	/* NOTE not all registers are implemented here */
 };
 struct gic400 * const gic = (void *)0x2C000000;  /* (see: DDI0503H table 3-2) */
-const u32 gic_interrupt_timer01 = 34;  /* (see: DDI0503H 2.8.2) */
+enum interrupt {
+	interrupt_none    = 0x3FF,  /* (see: DDI0471A table 3-6) */
+	interrupt_timer01 =    34,  /* (see: DDI0503H 2.8.2) */
+};
 
 static void
 print(const char * s) {
@@ -121,8 +124,10 @@ gic_init(void) {
 }
 
 void
-gic_interrupt_enable(u32 interrupt) {
-	gic->dist.isenabler[interrupt / 32] |= 1 << (interrupt % 32);
+gic_interrupt_enable(enum interrupt intr) {
+	if (intr == interrupt_none) return;
+
+	gic->dist.isenabler[intr / 32] |= 1 << (intr % 32);
 }
 
 __attribute__ ((interrupt ("IRQ")))
@@ -130,22 +135,25 @@ void
 _handler_irq(void) {
 	/* (see: DDI0471A B.1) */
 
-	u32 interrupt = gic->cpuif.iar;
+	for (;;) {
+		enum interrupt intr = gic->cpuif.iar;
+		if (intr == interrupt_none) break;
 
-	print("IRQ exception occurred: ");
-	if (interrupt == gic_interrupt_timer01) {
-		print("timer01");
+		print("IRQ exception occurred: ");
+		if (intr == interrupt_timer01) {
+			print("timer01");
 
-		timer01->timer0.clear = 0;
+			timer01->timer0.clear = 0;
+		}
+		else {
+			print("UNKNOWN (");
+			print_hex8(intr);
+			print(")");
+		}
+		print("\r\n");
+
+		gic->cpuif.eoir = intr;
 	}
-	else {
-		print("UNKNOWN (");
-		print_hex8(interrupt);
-		print(")");
-	}
-	print("\r\n");
-
-	gic->cpuif.eoir = interrupt;
 }
 
 void
@@ -153,7 +161,7 @@ main(void) {
 	print("hello world!" "\r\n");
 
 	gic_init();
-	gic_interrupt_enable(gic_interrupt_timer01);
+	gic_interrupt_enable(interrupt_timer01);
 	__asm("cpsie i");
 
 	timer_init(&(timer01->timer0), 0x80000);
