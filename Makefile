@@ -21,6 +21,11 @@
 03_OBJ = $(03_SRC_S:.S=.o) $(03_SRC_C:.c=.o)
 03_ELF = 03_interrupts/kernel.elf
 
+04_SRC_S = 04_mmu/init.S
+04_SRC_C = 04_mmu/main.c
+04_OBJ = $(04_SRC_S:.S=.o) $(04_SRC_C:.c=.o)
+04_ELF = 04_mmu/kernel.elf
+
 include config_build.mk
 
 PREFIX ?= arm-none-eabi-
@@ -46,7 +51,7 @@ CPP_FLAGS = -C -P
 
 
 .PHONY: all
-all: $(00_ELF) $(01_ELF) $(02_ELF) $(03_ELF)
+all: $(00_ELF) $(01_ELF) $(02_ELF) $(03_ELF) $(04_ELF)
 
 .PHONY: clean
 clean:
@@ -60,6 +65,8 @@ clean:
 	@rm -rf $(02_OBJ) $(02_ELF)
 	@echo [RM] $(03_OBJ) $(03_ELF)
 	@rm -rf $(03_OBJ) $(03_ELF)
+	@echo [RM] $(04_OBJ) $(04_ELF)
+	@rm -rf $(04_OBJ) $(04_ELF)
 
 layout.lds: layout.lds.cpp
 	@echo [CPP] $< -o $@
@@ -80,6 +87,10 @@ $(02_ELF): layout.lds $(02_OBJ)
 $(03_ELF): layout.lds $(03_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(03_OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(03_OBJ)
+
+$(04_ELF): layout.lds $(04_OBJ)
+	@echo [LD] -T layout.lds -o $@ $(04_OBJ)
+	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(04_OBJ)
 
 .S.o:
 	@echo [AS] $<
