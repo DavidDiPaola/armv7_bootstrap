@@ -1,6 +1,8 @@
 # armv7_bootstrap
 QEMU ARMv7 bare metal examples aimed at bootstrapping an OS kernel
 
+main repo: https://gitlab.com/DavidDiPaola/armv7_bootstrap
+
 ## building and running
   - build: `make`
   - run an example: `./run.sh 00_helloworld/kernel.elf`
