@@ -26,6 +26,11 @@
 04_OBJ = $(04_SRC_S:.S=.o) $(04_SRC_C:.c=.o)
 04_ELF = 04_mmu/kernel.elf
 
+05_SRC_S = 05_sound/init.S
+05_SRC_C = 05_sound/main.c
+05_OBJ = $(05_SRC_S:.S=.o) $(05_SRC_C:.c=.o)
+05_ELF = 05_sound/kernel.elf
+
 include config_build.mk
 
 PREFIX ?= arm-none-eabi-
@@ -51,7 +56,7 @@ CPP_FLAGS = -C -P
 
 
 .PHONY: all
-all: $(00_ELF) $(01_ELF) $(02_ELF) $(03_ELF) $(04_ELF)
+all: $(00_ELF) $(01_ELF) $(02_ELF) $(03_ELF) $(04_ELF) $(05_ELF)
 
 .PHONY: clean
 clean:
@@ -67,10 +72,18 @@ clean:
 	@rm -rf $(03_OBJ) $(03_ELF)
 	@echo [RM] $(04_OBJ) $(04_ELF)
 	@rm -rf $(04_OBJ) $(04_ELF)
+	@echo [RM] $(05_OBJ) $(05_ELF) 05_sound/sample.wav.h
+	@rm -rf $(05_OBJ) $(05_ELF) 05_sound/sample.wav.h
 
 layout.lds: layout.lds.cpp
 	@echo [CPP] $< -o $@
 	@$(CPP) $(CPP_FLAGS) $< -o $@
+
+05_sound/sample.wav.h: 05_sound/sample.wav
+	@echo [WAV2H] $< $@
+	@./05_sound/wav2h.sh $< $@
+
+05_sound/main.c: 05_sound/sample.wav.h
 
 $(00_ELF): layout.lds $(00_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(00_OBJ)
@@ -91,6 +104,10 @@ $(03_ELF): layout.lds $(03_OBJ)
 $(04_ELF): layout.lds $(04_OBJ)
 	@echo [LD] -T layout.lds -o $@ $(04_OBJ)
 	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(04_OBJ)
+
+$(05_ELF): layout.lds $(05_OBJ)
+	@echo [LD] -T layout.lds -o $@ $(05_OBJ)
+	@$(GLD) $(GLD_FLAGS) -T layout.lds -o $@ $(05_OBJ)
 
 .S.o:
 	@echo [AS] $<

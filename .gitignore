@@ -1,5 +1,6 @@
 *.o
 layout.lds
+*.wav.h
 *.elf
 
 .*.swp

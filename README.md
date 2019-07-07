@@ -14,10 +14,10 @@ QEMU ARMv7 bare metal examples aimed at bootstrapping an OS kernel
   - timer
   - interrupt handler
   - basic MMU setup, fault handler
+  - audio
 ### not done
   - storage/disk/sdcard (raw, no filesystem)
   - USB keyboard, mouse
-  - audio
   - video
   - networking?
   - multiple CPU cores?
